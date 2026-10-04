@@ -1,1 +1,2 @@
-interface:\n  display_name: "高性价比人生指南"\n  short_description: "先查原书条目，再回答具体人生决策"\n
+interface:
+  display_name: "高性价比人生指南"
