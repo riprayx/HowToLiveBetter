@@ -6,7 +6,7 @@ import { execFileSync } from "node:child_process";
 const root = resolve(import.meta.dirname, "..");
 const source = join(root, "chatgpt-plugin", "life-decision-guide");
 const buildRoot = join(root, ".build", "chatgpt-plugin");
-const skillRoot = join(buildRoot, "life-decision-guide");
+const skillRoot = join(buildRoot, "skills", "life-decision-guide");
 const dist = join(root, "dist");
 const zip = join(dist, "skill.zip");
 
@@ -56,8 +56,8 @@ const zipCode = [
   "with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:",
   "    for p in root.rglob('*'):",
   "        if p.is_file():",
-  "            z.write(p, pathlib.Path(root.name) / p.relative_to(root))"
+  "            z.write(p, p.relative_to(root))"
 ].join("\n");
-execFileSync(python, ["-c", zipCode, skillRoot, zip], { stdio: "inherit" });
+execFileSync(python, ["-c", zipCode, buildRoot, zip], { stdio: "inherit" });
 
 console.log(zip);
