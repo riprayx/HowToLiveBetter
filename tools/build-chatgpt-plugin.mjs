@@ -37,10 +37,17 @@ await writeFile(
 );
 
 await rm(zip, { force: true });
-execFileSync("powershell.exe", [
-  "-NoProfile",
-  "-Command",
-  `Set-Location '${buildRoot}'; Compress-Archive -Path 'life-decision-guide' -DestinationPath '${zip}' -Force`
-], { stdio: "inherit" });
+if (process.platform === "win32") {
+  execFileSync("powershell.exe", [
+    "-NoProfile",
+    "-Command",
+    `Set-Location '${buildRoot}'; Compress-Archive -Path 'life-decision-guide' -DestinationPath '${zip}' -Force`
+  ], { stdio: "inherit" });
+} else {
+  execFileSync("zip", ["-qr", zip, "life-decision-guide"], {
+    cwd: buildRoot,
+    stdio: "inherit"
+  });
+}
 
 console.log(zip);

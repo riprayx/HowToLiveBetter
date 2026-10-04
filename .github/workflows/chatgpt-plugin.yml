@@ -1,0 +1,40 @@
+name: Build ChatGPT plugin
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "book/**"
+      - "docs/**"
+      - "README.md"
+      - "index.html"
+      - "LICENSE"
+      - "LICENSE-CODE"
+      - "chatgpt-plugin/**"
+      - "tools/build-chatgpt-plugin.mjs"
+      - ".github/workflows/chatgpt-plugin.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Build skill archive
+        run: node tools/build-chatgpt-plugin.mjs
+      - name: Verify archive
+        run: |
+          unzip -l dist/skill.zip | grep "life-decision-guide/SKILL.md"
+          unzip -l dist/skill.zip | grep "life-decision-guide/agents/openai.yaml"
+          test "$(unzip -l dist/skill.zip | grep -c 'life-decision-guide/references/book/.*\.md')" -ge 34
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chatgpt-plugin
+          path: dist/skill.zip
+          if-no-files-found: error
