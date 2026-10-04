@@ -30,10 +30,21 @@ await copy(join(root, "LICENSE"), join(skillRoot, "references", "LICENSE"));
 await copy(join(root, "LICENSE-CODE"), join(skillRoot, "references", "LICENSE-CODE"));
 
 const commit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
-const upstream = execFileSync("git", ["remote", "get-url", "upstream"], { cwd: root, encoding: "utf8" }).trim();
+function gitRemote(name) {
+  try {
+    return execFileSync("git", ["remote", "get-url", name], {
+      cwd: root,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"]
+    }).trim();
+  } catch {
+    return "";
+  }
+}
+const sourceRepo = process.env.SOURCE_REPO_URL || gitRemote("upstream") || gitRemote("origin");
 await writeFile(
   join(skillRoot, "references", "SNAPSHOT.md"),
-  `# Snapshot\n\n- Source: ${upstream}\n- Commit: ${commit}\n- Built: ${new Date().toISOString()}\n`
+  `# Snapshot\n\n- Source: ${sourceRepo}\n- Commit: ${commit}\n- Built: ${new Date().toISOString()}\n`
 );
 
 await rm(zip, { force: true });

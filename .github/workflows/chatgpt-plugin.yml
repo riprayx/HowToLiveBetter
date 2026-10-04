@@ -27,6 +27,8 @@ jobs:
         with:
           node-version: "22"
       - name: Build skill archive
+        env:
+          SOURCE_REPO_URL: https://github.com/eternity4719/HowToLiveBetter.git
         run: node tools/build-chatgpt-plugin.mjs
       - name: Verify archive
         run: |
