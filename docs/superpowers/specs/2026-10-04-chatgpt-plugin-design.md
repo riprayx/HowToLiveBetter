@@ -22,22 +22,31 @@
 
 新增 `chatgpt-plugin/` 作为插件源目录，并提供一个最小构建脚本。构建脚本从当前仓库复制必要资源到独立插件包，避免维护第二份正文。
 
-预期结构：
+预期源码与构建结构：
 
 ```text
 chatgpt-plugin/
-  plugin.json
-  skills/
-    life-decision-guide/
-      SKILL.md
-  resources/
-    README.md
-    index.html
-    book/
-    LICENSE
-    LICENSE-CODE
+  life-decision-guide/
+    SKILL.md
+    agents/
+      openai.yaml
 tools/
   build-chatgpt-plugin.mjs
+
+# 构建出的插件包
+skills/
+  life-decision-guide/
+    SKILL.md
+    agents/
+      openai.yaml
+    references/
+      README.md
+      index.html
+      book/
+      docs/
+      LICENSE
+      LICENSE-CODE
+      SNAPSHOT.md
 ```
 
 ## 数据流
@@ -55,8 +64,8 @@ tools/
 `node tools/build-chatgpt-plugin.mjs`：
 
 - 清理并重建临时插件目录。
-- 复制当前插件清单、Skill、README、index.html、book 和许可证。
-- 生成一个可上传的 ZIP。
+- 复制 ChatGPT Skill 入口、UI 元数据、README、index.html、book、docs 和许可证。
+- 生成符合 ChatGPT 插件布局 `skills/life-decision-guide/...` 的可上传 ZIP。
 - 不复制 `.git`、CI、开发工具、广告或无关资源。
 - 构建失败必须以非零退出码结束。
 
