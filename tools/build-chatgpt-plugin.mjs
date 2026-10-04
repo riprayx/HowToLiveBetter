@@ -48,17 +48,16 @@ await writeFile(
 );
 
 await rm(zip, { force: true });
-if (process.platform === "win32") {
-  execFileSync("powershell.exe", [
-    "-NoProfile",
-    "-Command",
-    `Set-Location '${buildRoot}'; Compress-Archive -Path 'life-decision-guide' -DestinationPath '${zip}' -Force`
-  ], { stdio: "inherit" });
-} else {
-  execFileSync("zip", ["-qr", zip, "life-decision-guide"], {
-    cwd: buildRoot,
-    stdio: "inherit"
-  });
-}
+const python = process.platform === "win32" ? "python" : "python3";
+const zipCode = [
+  "import pathlib, sys, zipfile",
+  "root = pathlib.Path(sys.argv[1])",
+  "out = pathlib.Path(sys.argv[2])",
+  "with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:",
+  "    for p in root.rglob('*'):",
+  "        if p.is_file():",
+  "            z.write(p, pathlib.Path(root.name) / p.relative_to(root))"
+].join("\n");
+execFileSync(python, ["-c", zipCode, skillRoot, zip], { stdio: "inherit" });
 
 console.log(zip);
